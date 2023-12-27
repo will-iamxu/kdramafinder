@@ -3,11 +3,16 @@ import requests
 import os
 app = Flask(__name__)
 api_key = os.getenv('api_key')
-def get_actor_id(actor_name, api_key):
+def get_actor_info(actor_name, api_key):
     response = requests.get(f"https://api.themoviedb.org/3/search/person",
                             params={"api_key": api_key, "query": actor_name})
     data = response.json()
-    return data['results'][0]['id'] if data['results'] else None
+    if data['results']:
+        actor_id = data['results'][0]['id']
+        actor_image_url = f"https://image.tmdb.org/t/p/w500{data['results'][0]['profile_path']}" if data['results'][0].get('profile_path') else None
+        return actor_id, actor_image_url
+    else:
+        return None, None
 
 def get_actor_movie_credits(actor_id, api_key):
     response = requests.get(f"https://api.themoviedb.org/3/person/{actor_id}/movie_credits",
@@ -41,16 +46,17 @@ def get_tv_show_rating(tv_show_id, api_key):
 def index():
     if request.method == 'POST':
         actor_name = request.form.get('actor_name')
-        actor_id = get_actor_id(actor_name, api_key)
+        actor_id, actor_image_url = get_actor_info(actor_name, api_key)
 
         if actor_id:
             movies = get_actor_movie_credits(actor_id, api_key)
             tv_shows = get_actor_tv_credits(actor_id, api_key)
-            return render_template('results.html', actor_name=actor_name, movies=movies, tv_shows=tv_shows)
+            return render_template('results.html', actor_name=actor_name, movies=movies, tv_shows=tv_shows, actor_image_url=actor_image_url)
         else:
             return jsonify({"error": "Actor not found"})
 
     return render_template('index.html')
+
 
 if __name__ == '__main__':
     

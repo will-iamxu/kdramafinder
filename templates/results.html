@@ -46,6 +46,11 @@
 </head>
 <body>
     <div id="container">
+        {% if actor_image_url %}
+            <div class="actor-image">
+                <img src="{{ actor_image_url }}" alt="Picture of {{ actor_name }}" style="width:100%; max-width:300px; height:auto;">
+            </div>
+        {% endif %}
         <h2>Search Results for "{{ actor_name }}"</h2>
         <h3>Movies</h3>
         <table>

@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
+
 app = Flask(__name__)
 api_key = os.getenv('api_key')
+
 def get_actor_info(actor_name, api_key):
     response = requests.get(f"https://api.themoviedb.org/3/search/person",
                             params={"api_key": api_key, "query": actor_name})
@@ -56,7 +58,6 @@ def index():
             return jsonify({"error": "Actor not found"})
 
     return render_template('index.html')
-
 
 if __name__ == '__main__':
     

@@ -22,6 +22,7 @@ def get_actor_movie_credits(actor_id, api_key):
     movies = response.json()['cast']
     for movie in movies:
         movie['rating'] = get_movie_rating(movie['id'], api_key)
+        movie['release date'] = movie.get('release_date', 'N/A')
     return movies
 
 def get_actor_tv_credits(actor_id, api_key):
@@ -30,6 +31,7 @@ def get_actor_tv_credits(actor_id, api_key):
     tv_shows = response.json()['cast']
     for show in tv_shows:
         show['rating'] = get_tv_show_rating(show['id'], api_key)
+        show['release date'] = show.get('first_air_date', 'N/A')
     return tv_shows
 
 def get_movie_rating(movie_id, api_key):
@@ -60,5 +62,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    
     app.run(debug=True)

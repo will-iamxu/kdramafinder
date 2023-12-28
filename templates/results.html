@@ -58,37 +58,87 @@
             </div>
         {% endif %}
         <h2>Search Results for "{{ actor_name }}"</h2>
+        
         <h3>Movies</h3>
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Role</th>
-                <th>Rating</th>
-            </tr>
-            {% for movie in movies %}
-            <tr>
-                <td>{{ movie.title }}</td>
-                <td>{{ movie.character }}</td>
-                <td>{{ movie.rating }}/10</td>
-            </tr>
-            {% endfor %}
+        <table id="movies-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Role</th>
+                    <th onclick="sortTable('movies-table', 2, true)">Rating</th>
+                    <th onclick="sortTable('movies-table', 3, false)">Release Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movie in movies %}
+                <tr>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.character }}</td>
+                    <td>{{ movie.rating }}/10</td>
+                    <td>{{ movie.release_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
         
         <h3>TV Shows</h3>
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Role</th>
-                <th>Rating</th>
-            </tr>
-            {% for show in tv_shows %}
-            <tr>
-                <td>{{ show.name }}</td>
-                <td>{{ show.character }}</td>
-                <td>{{ show.rating }}/10</td>
-            </tr>
-            {% endfor %}
+        <table id="tv-shows-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Role</th>
+                    <th onclick="sortTable('tv-shows-table', 2, true)">Rating</th>
+                    <th onclick="sortTable('tv-shows-table', 3, false)">First Air Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for show in tv_shows %}
+                <tr>
+                    <td>{{ show.name }}</td>
+                    <td>{{ show.character }}</td>
+                    <td>{{ show.rating }}/10</td>
+                    <td>{{ show.first_air_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
+
+    <script>
+        function sortTable(tableId, columnIndex, isNumericSort) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById(tableId);
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.getElementsByTagName("TR");
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    if (isNumericSort) {
+                        if (parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+    </script>
 </body>
 </html>
+
+
+
+    
+    

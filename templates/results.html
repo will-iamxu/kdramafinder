@@ -60,13 +60,13 @@
         <h2>Search Results for "{{ actor_name }}"</h2>
         
         <h3>Movies</h3>
-        <table id="movies-table">
+        <table id="movies-table" data-sort-dir="asc">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th onclick="handleSort('movies-table', 0, false)">Title</th>
                     <th>Role</th>
-                    <th onclick="sortTable('movies-table', 2, true)">Rating</th>
-                    <th onclick="sortTable('movies-table', 3, false)">Release Date</th>
+                    <th onclick="handleSort('movies-table', 2, true)">Rating</th>
+                    <th onclick="handleSort('movies-table', 3, false)">Release Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,13 +82,13 @@
         </table>
         
         <h3>TV Shows</h3>
-        <table id="tv-shows-table">
+        <table id="tv-shows-table" data-sort-dir="asc">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th onclick="handleSort('tv-shows-table', 0, false)">Title</th>
                     <th>Role</th>
-                    <th onclick="sortTable('tv-shows-table', 2, true)">Rating</th>
-                    <th onclick="sortTable('tv-shows-table', 3, false)">First Air Date</th>
+                    <th onclick="handleSort('tv-shows-table', 2, true)">Rating</th>
+                    <th onclick="handleSort('tv-shows-table', 3, false)">First Air Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -105,25 +105,30 @@
     </div>
 
     <script>
-        function sortTable(tableId, columnIndex, isNumericSort) {
-            var table, rows, switching, i, x, y, shouldSwitch;
+        function sortTable(tableId, columnIndex, isNumeric, asc) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
             table = document.getElementById(tableId);
             switching = true;
+            dir = asc ? "asc" : "desc";
+        
             while (switching) {
                 switching = false;
                 rows = table.getElementsByTagName("TR");
-                for (i = 1; i < (rows.length - 1); i++) {
+                for (i = 1; i < rows.length - 1; i++) {
                     shouldSwitch = false;
                     x = rows[i].getElementsByTagName("TD")[columnIndex];
                     y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
-                    if (isNumericSort) {
-                        if (parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) {
+        
+                    if (isNumeric) {
+                        if ((dir == "asc" && parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) || 
+                            (dir == "desc" && parseFloat(x.innerHTML) < parseFloat(y.innerHTML))) {
                             shouldSwitch = true;
                             break;
                         }
                     } else {
-                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                            shouldSwitch = true;
+                        if ((dir == "asc" && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) || 
+                            (dir == "desc" && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase())) {
+                            shouldSwitch= true;
                             break;
                         }
                     }
@@ -131,10 +136,24 @@
                 if (shouldSwitch) {
                     rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                     switching = true;
+                    switchcount++;      
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
                 }
             }
         }
-    </script>
+        
+        function handleSort(tableId, columnIndex, isNumeric) {
+            var table = document.getElementById(tableId);
+            var currentDir = table.getAttribute('data-sort-dir');
+            var asc = currentDir !== 'asc';
+            sortTable(tableId, columnIndex, isNumeric, asc);
+            table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+        }
+    </script>   
 </body>
 </html>
 
